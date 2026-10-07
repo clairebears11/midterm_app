@@ -134,11 +134,12 @@ the price of an Airbnb listing.
 
     st.pyplot(fig2)
 
-    st.write("""
-    Property type may be an important predictor of Airbnb price.
-    This visualization compares the average nightly price for the
-    different types of properties in the dataset.
-    """)
+st.write("""
+**Insight:** Property type shows a substantial difference in average price.
+Entire homes have an average nightly price of approximately $193, compared
+with about $84 for private rooms and $63 for shared rooms. This suggests that
+property type may be an important predictor of Airbnb price.
+""")
 
     # -------------------------------
     # 3. Price vs Minimum Nights
@@ -169,10 +170,12 @@ the price of an Airbnb listing.
 
     st.pyplot(fig3)
 
-    st.write("""
-    This scatter plot examines whether listings with different
-    minimum-night requirements tend to have different prices.
-    """)
+st.write("""
+**Insight:** Most listings are concentrated at relatively low minimum-night
+requirements. The relationship between minimum nights and price does not appear
+as strong or straightforward as the differences observed for borough and
+property type.
+""")
 
     # -------------------------------
     # 4. Correlation Heatmap
