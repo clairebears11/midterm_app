@@ -63,7 +63,137 @@ elif page == "Data Visualization 📊":
 
     st.title("📊 NYC Airbnb Data Visualization")
 
-    st.info("We'll build the visualizations here next!")
+    st.write("""
+    This page explores factors that may influence Airbnb prices in New York City.
+    We focus on location, property type, minimum-night requirements, and
+    relationships between numerical variables.
+    """)
+
+    # Clean data for visualizations
+    viz_df = df.dropna(subset=["Price"]).copy()
+
+    # -------------------------------
+    # 1. Average Price by Borough
+    # -------------------------------
+
+    st.subheader("🏙️ Average Price by Borough")
+
+    borough_price = (
+        viz_df.groupby("Boroughs")["Price"]
+        .mean()
+        .sort_values(ascending=False)
+    )
+
+    fig1, ax1 = plt.subplots()
+
+    sns.barplot(
+        x=borough_price.index,
+        y=borough_price.values,
+        ax=ax1
+    )
+
+    ax1.set_xlabel("Borough")
+    ax1.set_ylabel("Average Price ($)")
+    ax1.set_title("Average Airbnb Price by NYC Borough")
+    plt.xticks(rotation=45)
+
+    st.pyplot(fig1)
+
+    st.write("""
+    This graph compares average Airbnb prices across NYC boroughs.
+    It allows us to determine whether location appears to be associated
+    with the nightly price of a listing.
+    """)
+
+    # -------------------------------
+    # 2. Average Price by Property Type
+    # -------------------------------
+
+    st.subheader("🏠 Average Price by Property Type")
+
+    property_price = (
+        viz_df.groupby("Prop_Type")["Price"]
+        .mean()
+        .sort_values(ascending=False)
+    )
+
+    fig2, ax2 = plt.subplots()
+
+    sns.barplot(
+        x=property_price.index,
+        y=property_price.values,
+        ax=ax2
+    )
+
+    ax2.set_xlabel("Property Type")
+    ax2.set_ylabel("Average Price ($)")
+    ax2.set_title("Average Airbnb Price by Property Type")
+    plt.xticks(rotation=45)
+
+    st.pyplot(fig2)
+
+    st.write("""
+    Property type may be an important predictor of Airbnb price.
+    This visualization compares the average nightly price for the
+    different types of properties in the dataset.
+    """)
+
+    # -------------------------------
+    # 3. Price vs Minimum Nights
+    # -------------------------------
+
+    st.subheader("🌙 Price vs. Minimum Nights")
+
+    scatter_df = viz_df.dropna(subset=["Min_Nights"])
+
+    fig3, ax3 = plt.subplots()
+
+    sns.scatterplot(
+        data=scatter_df,
+        x="Min_Nights",
+        y="Price",
+        alpha=0.4,
+        ax=ax3
+    )
+
+    ax3.set_xlabel("Minimum Nights")
+    ax3.set_ylabel("Price ($)")
+    ax3.set_title("Airbnb Price vs. Minimum Nights")
+
+    st.pyplot(fig3)
+
+    st.write("""
+    This scatter plot examines whether listings with different
+    minimum-night requirements tend to have different prices.
+    """)
+
+    # -------------------------------
+    # 4. Correlation Heatmap
+    # -------------------------------
+
+    st.subheader("🔥 Correlation Heatmap")
+
+    numeric_df = viz_df.select_dtypes(include=np.number)
+
+    fig4, ax4 = plt.subplots(figsize=(10, 7))
+
+    sns.heatmap(
+        numeric_df.corr(),
+        annot=True,
+        fmt=".2f",
+        cmap="coolwarm",
+        ax=ax4
+    )
+
+    ax4.set_title("Correlation Between Numerical Variables")
+
+    st.pyplot(fig4)
+
+    st.write("""
+    The correlation matrix helps identify numerical variables that
+    have relationships with Airbnb price. Variables with stronger
+    correlations may be useful predictors in our linear regression model.
+    """)
 
 elif page == "Price Prediction 🤖":
 
