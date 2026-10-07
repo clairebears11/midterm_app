@@ -113,6 +113,54 @@ the price of an Airbnb listing.
 
     st.subheader("🏠 Average Price by Property Type")
 
+    elif page == "Data Visualization 📊":
+
+    st.title("📊 NYC Airbnb Data Visualization")
+
+    st.write("""
+    This page explores factors that may influence Airbnb prices in New York City.
+    We focus on location, property type, minimum-night requirements, and
+    relationships between numerical variables.
+    """)
+
+    # Clean data
+    viz_df = df.dropna(subset=["Price"]).copy()
+
+    # 1. Average Price by Borough
+    st.subheader("🏙️ Average Price by Borough")
+
+    borough_price = (
+        viz_df.groupby("Boroughs")["Price"]
+        .mean()
+        .sort_values(ascending=False)
+    )
+
+    fig1, ax1 = plt.subplots()
+
+    sns.barplot(
+        x=borough_price.index,
+        y=borough_price.values,
+        ax=ax1
+    )
+
+    ax1.set_xlabel("Borough")
+    ax1.set_ylabel("Average Price ($)")
+    ax1.set_title("Average Airbnb Price by NYC Borough")
+    plt.xticks(rotation=45)
+
+    st.pyplot(fig1)
+
+    st.write("""
+    **Insight:** Location appears to have a strong relationship with Airbnb pricing.
+    Manhattan has the highest average nightly price at approximately $178, followed
+    by Brooklyn at approximately $120. The Bronx has the lowest average price at
+    around $80. This suggests that borough should be considered when predicting
+    the price of an Airbnb listing.
+    """)
+
+    # 2. Average Price by Property Type
+    st.subheader("🏠 Average Price by Property Type")
+
     property_price = (
         viz_df.groupby("Prop_Type")["Price"]
         .mean()
@@ -134,21 +182,19 @@ the price of an Airbnb listing.
 
     st.pyplot(fig2)
 
-st.write("""
-**Insight:** Property type shows a substantial difference in average price.
-Entire homes have an average nightly price of approximately $193, compared
-with about $84 for private rooms and $63 for shared rooms. This suggests that
-property type may be an important predictor of Airbnb price.
-""")
+    st.write("""
+    **Insight:** Property type shows a substantial difference in average price.
+    Entire homes have an average nightly price of approximately $193, compared
+    with about $84 for private rooms and $63 for shared rooms. This suggests that
+    property type may be an important predictor of Airbnb price.
+    """)
 
-    # -------------------------------
     # 3. Price vs Minimum Nights
-    # -------------------------------
-
     st.subheader("🌙 Price vs. Minimum Nights")
 
-   scatter_df = viz_df.dropna(subset=["Min_Nights"]).copy()
+    scatter_df = viz_df.dropna(subset=["Min_Nights"]).copy()
 
+    # Remove extreme values for visualization
     scatter_df = scatter_df[
         (scatter_df["Price"] <= 1000) &
         (scatter_df["Min_Nights"] <= 60)
@@ -170,17 +216,14 @@ property type may be an important predictor of Airbnb price.
 
     st.pyplot(fig3)
 
-st.write("""
-**Insight:** Most listings are concentrated at relatively low minimum-night
-requirements. The relationship between minimum nights and price does not appear
-as strong or straightforward as the differences observed for borough and
-property type.
-""")
+    st.write("""
+    **Insight:** Most listings are concentrated at relatively low minimum-night
+    requirements. The relationship between minimum nights and price does not
+    appear as strong or straightforward as the differences observed for borough
+    and property type.
+    """)
 
-    # -------------------------------
     # 4. Correlation Heatmap
-    # -------------------------------
-
     st.subheader("🔥 Correlation Heatmap")
 
     numeric_df = viz_df.select_dtypes(include=np.number)
@@ -200,11 +243,11 @@ property type.
     st.pyplot(fig4)
 
     st.write("""
-    The correlation matrix helps identify numerical variables that
-    have relationships with Airbnb price. Variables with stronger
-    correlations may be useful predictors in our linear regression model.
+    **Insight:** The heatmap shows that most numerical variables have relatively
+    weak linear relationships with price. This suggests that categorical
+    variables such as borough and property type may provide important additional
+    information for predicting Airbnb prices.
     """)
-
 elif page == "Price Prediction 🤖":
 
     st.title("🤖 Airbnb Price Prediction")
