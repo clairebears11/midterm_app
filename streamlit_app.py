@@ -99,11 +99,13 @@ elif page == "Data Visualization 📊":
 
     st.pyplot(fig1)
 
-    st.write("""
-    This graph compares average Airbnb prices across NYC boroughs.
-    It allows us to determine whether location appears to be associated
-    with the nightly price of a listing.
-    """)
+st.write("""
+**Insight:** Location appears to have a strong relationship with Airbnb pricing.
+Manhattan has the highest average nightly price at approximately $178, followed
+by Brooklyn at approximately $120. The Bronx has the lowest average price at
+around $80. This suggests that borough should be considered when predicting
+the price of an Airbnb listing.
+""")
 
     # -------------------------------
     # 2. Average Price by Property Type
@@ -144,7 +146,12 @@ elif page == "Data Visualization 📊":
 
     st.subheader("🌙 Price vs. Minimum Nights")
 
-    scatter_df = viz_df.dropna(subset=["Min_Nights"])
+   scatter_df = viz_df.dropna(subset=["Min_Nights"]).copy()
+
+    scatter_df = scatter_df[
+        (scatter_df["Price"] <= 1000) &
+        (scatter_df["Min_Nights"] <= 60)
+    ]
 
     fig3, ax3 = plt.subplots()
 
