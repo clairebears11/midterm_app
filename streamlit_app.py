@@ -609,7 +609,7 @@ elif page == "Price Prediction 🤖":
         optimal price. Actual pricing should also consider
         seasonality, amenities, demand, and property quality.
         """)
-            st.subheader("🧠 Understanding Our Model")
+        st.subheader("🧠 Understanding Our Model")
 
         st.write(f"""
         Our linear regression model explains approximately
