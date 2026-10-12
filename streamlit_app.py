@@ -586,7 +586,7 @@ elif page == "Price Prediction 🤖":
             f"**{borough}** with these characteristics has an estimated "
             f"nightly price of **${predicted_price:,.2f}**."
         )
-                st.subheader("💼 Business Recommendation")
+        st.subheader("💼 Business Recommendation")
 
         st.info(f"""
         Based on the characteristics entered, our linear regression
