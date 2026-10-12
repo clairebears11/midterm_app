@@ -530,52 +530,48 @@ elif page == "Price Prediction 🤖":
     # 8. Make Prediction
     # ---------------------------------
 
-    if st.button(
-        "🔮 Predict Nightly Price",
-        type="primary"
-    ):
+    if st.button("🔮 Predict Nightly Price", type="primary"):
 
-        new_listing = pd.DataFrame(
-            {
-                "Boroughs": [borough],
-                "Prop_Type": [property_type],
-                "Min_Nights": [minimum_nights],
-                "Host_Listing_Cnt": [host_listing_count],
-                "Days_Available": [days_available],
-                "Review_Cnt": [review_count],
-                "Reviews30d": [reviews_30d]
-            }
+        # Create a dataframe for the new listing
+        new_listing = pd.DataFrame({
+            "Boroughs": [borough],
+            "Prop_Type": [property_type],
+            "Min_Nights": [minimum_nights],
+            "Host_Listing_Cnt": [host_listing_count],
+            "Days_Available": [days_available],
+            "Review_Cnt": [review_count],
+            "Reviews30d": [reviews_30d]
+        })
+
+        # Encode the selected categories
+        new_listing = pd.get_dummies(
+            new_listing,
+            columns=["Boroughs", "Prop_Type"]
         )
 
-    # Encode the new listing using the same categories as training
-    new_listing = pd.get_dummies(
-        new_listing,
-        columns=["Boroughs", "Prop_Type"]
-    )
-    
-    # Match all training columns
-    new_listing = new_listing.reindex(
-        columns=X.columns,
-        fill_value=0
-    )
-    
-    # Explicitly set the correct borough and property type
-    for col in X.columns:
-        if col.startswith("Boroughs_"):
-            new_listing[col] = int(col == f"Boroughs_{borough}")
-    
-        if col.startswith("Prop_Type_"):
-            new_listing[col] = int(col == f"Prop_Type_{property_type}")
-
-        predicted_price = model.predict(
-            new_listing
-        )[0]
-
-        # Avoid displaying negative prices
-        predicted_price = max(
-            predicted_price,
-            0
+        # Match the training model's feature columns
+        new_listing = new_listing.reindex(
+            columns=X.columns,
+            fill_value=0
         )
+
+        # Correctly identify borough and property type
+        for col in X.columns:
+            if col.startswith("Boroughs_"):
+                new_listing[col] = int(
+                    col == f"Boroughs_{borough}"
+                )
+
+            if col.startswith("Prop_Type_"):
+                new_listing[col] = int(
+                    col == f"Prop_Type_{property_type}"
+                )
+
+        # Generate the price prediction
+        predicted_price = model.predict(new_listing)[0]
+
+        # Prevent negative displayed prices
+        predicted_price = max(predicted_price, 0)
 
         st.success(
             f"Estimated Nightly Price: ${predicted_price:,.2f}"
@@ -583,32 +579,33 @@ elif page == "Price Prediction 🤖":
 
         st.write(
             f"Based on the model, a **{property_type}** in "
-            f"**{borough}** with these characteristics has an estimated "
-            f"nightly price of **${predicted_price:,.2f}**."
+            f"**{borough}** has an estimated nightly price of "
+            f"**${predicted_price:,.2f}**."
         )
+
+        # Business recommendation
         st.subheader("💼 Business Recommendation")
 
         st.info(f"""
-        Based on the characteristics entered, our linear regression
-        model estimates a nightly Airbnb price of
-        **${predicted_price:,.2f}**.
+        Our model estimates a nightly price of
+        **${predicted_price:,.2f}** for this listing.
 
-        This estimate provides Airbnb hosts with a data-driven
-        starting point for setting their listing price.
+        This prediction gives Airbnb hosts a data-driven
+        starting point when setting their nightly rates.
 
-        Hosts can compare this estimated price with similar
-        properties in their borough to make more informed
-        pricing decisions.
+        Hosts can compare this estimate with similar listings
+        in their borough to make more informed pricing decisions.
 
-        **Business Value:** This tool helps hosts reduce
-        uncertainty when selecting an initial listing price.
+        **Business Value:** This tool helps reduce uncertainty
+        when choosing an initial listing price.
         """)
 
         st.caption("""
-        Note: This is a statistical estimate, not a guaranteed
-        optimal price. Actual pricing should also consider
-        seasonality, amenities, demand, and property quality.
+        This is an estimated price, not a guaranteed optimal rate.
+        Actual prices also depend on amenities, seasonal demand,
+        and property quality.
         """)
+
         st.subheader("🧠 Understanding Our Model")
 
         st.write(f"""
