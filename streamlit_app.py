@@ -547,20 +547,25 @@ elif page == "Price Prediction 🤖":
             }
         )
 
-        # Encode categorical variables
-        new_listing = pd.get_dummies(
-            new_listing,
-            columns=[
-                "Boroughs",
-                "Prop_Type"
-            ]
-        )
-
-        # Make columns match training data
-        new_listing = new_listing.reindex(
-            columns=X.columns,
-            fill_value=0
-        )
+    # Encode the new listing using the same categories as training
+    new_listing = pd.get_dummies(
+        new_listing,
+        columns=["Boroughs", "Prop_Type"]
+    )
+    
+    # Match all training columns
+    new_listing = new_listing.reindex(
+        columns=X.columns,
+        fill_value=0
+    )
+    
+    # Explicitly set the correct borough and property type
+    for col in X.columns:
+        if col.startswith("Boroughs_"):
+            new_listing[col] = int(col == f"Boroughs_{borough}")
+    
+        if col.startswith("Prop_Type_"):
+            new_listing[col] = int(col == f"Prop_Type_{property_type}")
 
         predicted_price = model.predict(
             new_listing
@@ -581,3 +586,47 @@ elif page == "Price Prediction 🤖":
             f"**{borough}** with these characteristics has an estimated "
             f"nightly price of **${predicted_price:,.2f}**."
         )
+                st.subheader("💼 Business Recommendation")
+
+        st.info(f"""
+        Based on the characteristics entered, our linear regression
+        model estimates a nightly Airbnb price of
+        **${predicted_price:,.2f}**.
+
+        This estimate provides Airbnb hosts with a data-driven
+        starting point for setting their listing price.
+
+        Hosts can compare this estimated price with similar
+        properties in their borough to make more informed
+        pricing decisions.
+
+        **Business Value:** This tool helps hosts reduce
+        uncertainty when selecting an initial listing price.
+        """)
+
+        st.caption("""
+        Note: This is a statistical estimate, not a guaranteed
+        optimal price. Actual pricing should also consider
+        seasonality, amenities, demand, and property quality.
+        """)
+            st.subheader("🧠 Understanding Our Model")
+
+        st.write(f"""
+        Our linear regression model explains approximately
+        **{r2 * 100:.1f}% of the variation** in NYC Airbnb prices.
+    
+        The Mean Absolute Error (MAE) is **${mae:,.2f}**,
+        meaning that our predictions differ from actual nightly
+        prices by approximately this amount on average.
+    
+        Although the model identifies useful relationships
+        between listing characteristics and prices, it is
+        less accurate for expensive properties.
+    
+        **Model Limitations:**
+        - The dataset does not include amenities or property quality.
+        - Seasonal demand is not included.
+        - Linear regression assumes an additive, linear relationship
+          between the predictors and price.
+        - Unusually expensive listings can be difficult to predict.
+        """)
